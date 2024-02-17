@@ -10,4 +10,9 @@ public class UDPServer implements Server {
     public void stopServer() {
         throw new RuntimeException("not implemented");
     }
+
+    @Override
+    public boolean isRunning() {
+        return false;
+    }
 }
