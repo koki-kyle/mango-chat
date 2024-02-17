@@ -13,10 +13,18 @@ public class ServerController {
     }
 
     public void startServer(int port) {
-        server.startServer(port);
+        if (!server.isRunning()) {
+            server.startServer(port);
+        } else {
+            System.out.println("server is already running");
+        }
     }
 
     public void stopServer() {
-        server.stopServer();
+        if (server.isRunning()) {
+            server.stopServer();
+        } else {
+            System.out.println("server is already stopped");
+        }
     }
 }
