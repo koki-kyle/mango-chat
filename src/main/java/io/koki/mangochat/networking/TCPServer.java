@@ -39,7 +39,15 @@ public class TCPServer implements Server {
 
     @Override
     public void stopServer() {
-        throw new RuntimeException("not implemented");
+        try {
+            if (serverSocket != null && !serverSocket.isClosed()) {
+                serverSocket.close();
+            }
+        } catch (IOException ignore) {
+        } finally {
+            System.out.println("TCP Server stopped");
+            running = false;
+        }
     }
 
     @Override
