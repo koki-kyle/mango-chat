@@ -24,8 +24,6 @@ public class MangoChatServer {
         int port = 1234;
         serverController.startServer(port);
 
-        System.out.printf("server running on port %d%n", port);
-
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("shutting down server...");
             serverController.stopServer();
