@@ -14,7 +14,7 @@ public class ServerController {
 
     public void startServer(int port) {
         if (!server.isRunning()) {
-            server.startServer(port);
+            new Thread(() -> server.startServer(port)).start();
         } else {
             System.out.println("server is already running");
         }
