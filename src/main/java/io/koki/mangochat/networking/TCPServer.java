@@ -1,9 +1,8 @@
 package io.koki.mangochat.networking;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import io.koki.mangochat.model.Message;
+
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -60,17 +59,19 @@ public class TCPServer implements Server {
 
         new Thread(() -> {
             try (
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                    ObjectInputStream reader = new ObjectInputStream(clientSocket.getInputStream());
                     PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true)
             ) {
-                String message;
+                do {
+                    Message message = (Message) reader.readObject();
 
-                while ((message = reader.readLine()) != null) {
-                    System.out.printf("received message from %s > %s%n", username, message);
+                    System.out.printf("received message from %s > %s%n", message.getOwner().getUsername(), message.getBody());
 
-                    writer.printf("server received your message: %s%n", message);
-                }
+                    writer.printf("server received your message: %s%n", message.getBody());
+                } while (true);
             } catch (IOException ignore) {
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
             } finally {
                 System.out.printf("client disconnected: %s%n", username);
             }
