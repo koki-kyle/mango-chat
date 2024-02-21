@@ -1,15 +1,18 @@
 package io.koki.mangochat.networking;
 
 import io.koki.mangochat.model.Message;
+import io.koki.mangochat.model.User;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.function.Predicate;
 
 public class TCPMangoServer implements MangoServer {
     private ServerSocket serverSocket = null;
     private volatile boolean running = false;
+    private Predicate<User> userAuthentication = null;
 
     @Override
     public void startServer(int port) {
@@ -22,7 +25,6 @@ public class TCPMangoServer implements MangoServer {
             while (true) {
                 try {
                     Socket clientSocket = serverSocket.accept();
-                    System.out.printf("client connected:%n\taddress: %s%n\tport: %d%n%n", clientSocket.getInetAddress().getCanonicalHostName(), clientSocket.getPort());
 
                     // Handle client communication in a separate thread
                     handleClient(clientSocket);
@@ -52,6 +54,11 @@ public class TCPMangoServer implements MangoServer {
     @Override
     public boolean isRunning() {
         return running;
+    }
+
+    @Override
+    public void setUserAuthenticationPredicate(Predicate<User> predicate) {
+        userAuthentication = predicate;
     }
 
     private void handleClient(Socket clientSocket) {
