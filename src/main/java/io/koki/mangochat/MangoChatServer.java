@@ -18,6 +18,10 @@ public class MangoChatServer {
                 ? new TCPMangoServer()
                 : new UDPMangoServer();
         DatabaseManager databaseManager = new DatabaseManager();
+
+        // demo data for testing
+        databaseManager.demoData();
+
         ServerController serverController = new ServerController(mangoServer, databaseManager);
 
         // start the server
