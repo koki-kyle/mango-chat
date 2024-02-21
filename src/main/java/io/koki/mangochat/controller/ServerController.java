@@ -10,6 +10,10 @@ public class ServerController {
     public ServerController(MangoServer mangoServer, DatabaseManager databaseManager) {
         this.mangoServer = mangoServer;
         this.databaseManager = databaseManager;
+
+        mangoServer.setUserAuthenticationPredicate(user -> databaseManager
+                .getUserByUsernameAndPassword(user.getUsername(), user.getPassword())
+                .isPresent());
     }
 
     public void startServer(int port) {
