@@ -1,4 +1,27 @@
 package io.koki.mangochat.networking;
 
-public class UDPClient {
+import io.koki.mangochat.model.User;
+
+import java.net.InetAddress;
+
+public class UDPClient implements Client {
+    @Override
+    public boolean setUpServer(InetAddress address, int port) {
+        return false;
+    }
+
+    @Override
+    public boolean authenticate(User user) {
+        return false;
+    }
+
+    @Override
+    public void fetchMessages() {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public void disconnect() {
+        throw new RuntimeException("not implemented");
+    }
 }
