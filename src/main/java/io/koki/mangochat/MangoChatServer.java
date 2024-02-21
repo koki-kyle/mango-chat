@@ -4,9 +4,9 @@ import io.koki.mangochat.config.AppConfig;
 import io.koki.mangochat.config.CommunicationMode;
 import io.koki.mangochat.controller.ServerController;
 import io.koki.mangochat.model.DatabaseManager;
-import io.koki.mangochat.networking.Server;
-import io.koki.mangochat.networking.TCPServer;
-import io.koki.mangochat.networking.UDPServer;
+import io.koki.mangochat.networking.MangoServer;
+import io.koki.mangochat.networking.TCPMangoServer;
+import io.koki.mangochat.networking.UDPMangoServer;
 
 public class MangoChatServer {
     public static void main(String[] args) {
@@ -14,11 +14,11 @@ public class MangoChatServer {
         AppConfig.setCommunicationMode(CommunicationMode.TCP);
 
         // setup initial components
-        Server server = AppConfig.getCommunicationMode() == CommunicationMode.TCP
-                ? new TCPServer()
-                : new UDPServer();
+        MangoServer mangoServer = AppConfig.getCommunicationMode() == CommunicationMode.TCP
+                ? new TCPMangoServer()
+                : new UDPMangoServer();
         DatabaseManager databaseManager = new DatabaseManager();
-        ServerController serverController = new ServerController(server, databaseManager);
+        ServerController serverController = new ServerController(mangoServer, databaseManager);
 
         // start the server
         int port = 1234;
