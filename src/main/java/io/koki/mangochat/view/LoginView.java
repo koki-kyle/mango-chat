@@ -2,6 +2,7 @@ package io.koki.mangochat.view;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 public class LoginView extends JFrame {
     private final JButton loginButton;
@@ -57,5 +58,26 @@ public class LoginView extends JFrame {
         constraints.gridy = 2;
         constraints.gridwidth = 2;
         add(loginButton, constraints);
+    }
+
+    public String getUsername() {
+        return usernameTextField.getText();
+    }
+
+    public char[] getPassword() {
+        return passwordTextField.getPassword();
+    }
+
+    public void setLoginButtonListener(ActionListener listener) {
+        loginButton.addActionListener(listener);
+    }
+
+    public void displayErrorMessage(String errorMessage) {
+        JOptionPane.showMessageDialog(this, errorMessage, "error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void clearFields() {
+        usernameTextField.setText("");
+        passwordTextField.setText("");
     }
 }
