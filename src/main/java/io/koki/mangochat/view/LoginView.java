@@ -72,8 +72,8 @@ public class LoginView extends JFrame {
         loginButton.addActionListener(listener);
     }
 
-    public void displayMessage(String message, int messageType) {
-        JOptionPane.showMessageDialog(this, message, "error", messageType);
+    public void displayMessage(String message, String title, int messageType) {
+        JOptionPane.showMessageDialog(this, message, title, messageType);
     }
 
     public void clearFields() {

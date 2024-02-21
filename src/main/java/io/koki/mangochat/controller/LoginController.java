@@ -27,9 +27,9 @@ public class LoginController {
             loginView.clearFields();
 
             if (!mangoClient.authenticate(new User(username, password))) {
-                loginView.displayMessage("username or password incorrect", JOptionPane.ERROR_MESSAGE);
+                loginView.displayMessage("username or password incorrect", "error", JOptionPane.ERROR_MESSAGE);
             } else {
-                loginView.displayMessage(String.format("welcome %s!!", username), JOptionPane.INFORMATION_MESSAGE);
+                loginView.displayMessage(String.format("welcome %s!!", username), "login successful", JOptionPane.INFORMATION_MESSAGE);
                 changeView = true;
                 loginView.dispatchEvent(new WindowEvent(loginView, WindowEvent.WINDOW_CLOSING));
                 chatController = new ChatController(mangoClient, new ChatView());
