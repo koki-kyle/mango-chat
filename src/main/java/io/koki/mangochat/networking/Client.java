@@ -5,5 +5,4 @@ import io.koki.mangochat.model.User;
 public interface Client {
     boolean authenticate(User user);
     void fetchMessages();
-    void disconnect();
 }
