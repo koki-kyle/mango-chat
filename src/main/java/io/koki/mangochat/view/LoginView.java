@@ -3,6 +3,7 @@ package io.koki.mangochat.view;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowListener;
 
 public class LoginView extends JFrame {
     private final JButton loginButton;
@@ -70,6 +71,10 @@ public class LoginView extends JFrame {
 
     public void setLoginButtonListener(ActionListener listener) {
         loginButton.addActionListener(listener);
+    }
+
+    public void setWindowClosingListener(WindowListener listener) {
+        this.addWindowListener(listener);
     }
 
     public void displayErrorMessage(String errorMessage) {
