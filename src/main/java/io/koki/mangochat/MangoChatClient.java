@@ -13,11 +13,11 @@ public class MangoChatClient {
     public static void main(String[] args) {
         AppConfig.setCommunicationMode(CommunicationMode.TCP);
 
-        Client client = AppConfig.getCommunicationMode() == CommunicationMode.TCP
-                ? new TCPClient()
-                : new UDPClient();
+        MangoClient mangoClient = AppConfig.getCommunicationMode() == CommunicationMode.TCP
+                ? new TCPMangoClient()
+                : new UDPMangoClient();
         LoginView loginView = new LoginView();
-        LoginController loginController = new LoginController(client, loginView);
+        LoginController loginController = new LoginController(mangoClient, loginView);
 
         try {
             loginController.setUpServer(InetAddress.getLocalHost(), 1234);

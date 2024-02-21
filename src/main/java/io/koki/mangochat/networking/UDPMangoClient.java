@@ -4,7 +4,7 @@ import io.koki.mangochat.model.User;
 
 import java.net.InetAddress;
 
-public class UDPClient implements Client {
+public class UDPMangoClient implements MangoClient {
     @Override
     public boolean setUpServer(InetAddress address, int port) {
         return false;

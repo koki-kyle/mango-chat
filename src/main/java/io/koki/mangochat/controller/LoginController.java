@@ -1,7 +1,7 @@
 package io.koki.mangochat.controller;
 
 import io.koki.mangochat.model.User;
-import io.koki.mangochat.networking.Client;
+import io.koki.mangochat.networking.MangoClient;
 import io.koki.mangochat.view.ChatView;
 import io.koki.mangochat.view.LoginView;
 
@@ -11,12 +11,12 @@ import java.awt.event.WindowEvent;
 import java.net.InetAddress;
 
 public class LoginController {
-    private final Client client;
+    private final MangoClient mangoClient;
     private final LoginView loginView;
     private boolean changeView = false;
 
-    public LoginController(Client client, LoginView loginView) {
-        this.client = client;
+    public LoginController(MangoClient mangoClient, LoginView loginView) {
+        this.mangoClient = mangoClient;
         this.loginView = loginView;
 
         loginView.setLoginButtonListener(e -> {
@@ -26,13 +26,13 @@ public class LoginController {
 
             loginView.clearFields();
 
-            if (!client.authenticate(new User(username, password))) {
+            if (!mangoClient.authenticate(new User(username, password))) {
                 loginView.displayErrorMessage("username or password incorrect");
             } else {
                 loginView.displayErrorMessage(String.format("welcome %s!!", username));
                 changeView = true;
                 loginView.dispatchEvent(new WindowEvent(loginView, WindowEvent.WINDOW_CLOSING));
-                chatController = new ChatController(client, new ChatView());
+                chatController = new ChatController(mangoClient, new ChatView());
                 chatController.show();
             }
         });
@@ -44,7 +44,7 @@ public class LoginController {
                     System.out.println("changing view");
                     loginView.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 } else {
-                    client.disconnect();
+                    mangoClient.disconnect();
                 }
             }
         });
@@ -55,6 +55,6 @@ public class LoginController {
     }
 
     public void setUpServer(InetAddress address, int port) {
-        client.setUpServer(address, port);
+        mangoClient.setUpServer(address, port);
     }
 }

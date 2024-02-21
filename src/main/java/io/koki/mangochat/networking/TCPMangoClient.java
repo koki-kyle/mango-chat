@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 
-public class TCPClient implements Client {
+public class TCPMangoClient implements MangoClient {
     private Socket serverSocket = null;
 
     @Override
