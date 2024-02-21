@@ -6,8 +6,8 @@ import java.net.InetAddress;
 
 public class UDPMangoClient implements MangoClient {
     @Override
-    public boolean setUpServer(InetAddress address, int port) {
-        return false;
+    public void setUpServer(InetAddress address, int port) {
+        throw new RuntimeException("not implemented");
     }
 
     @Override
