@@ -12,5 +12,5 @@ public class User implements Serializable {
     @Serial
     private static final long serialVersionUID = 20L;
     private String username;
-    private String password;
+    private char[] password;
 }
