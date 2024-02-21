@@ -77,8 +77,8 @@ public class LoginView extends JFrame {
         this.addWindowListener(listener);
     }
 
-    public void displayErrorMessage(String errorMessage) {
-        JOptionPane.showMessageDialog(this, errorMessage, "error", JOptionPane.ERROR_MESSAGE);
+    public void displayMessage(String message, int messageType) {
+        JOptionPane.showMessageDialog(this, message, "error", messageType);
     }
 
     public void clearFields() {
