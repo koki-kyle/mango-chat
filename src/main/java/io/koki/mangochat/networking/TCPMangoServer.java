@@ -16,6 +16,12 @@ public class TCPMangoServer implements MangoServer {
 
     @Override
     public void startServer(int port) {
+        Socket clientSocket;
+        ObjectInputStream in;
+        ObjectOutputStream out;
+        User user;
+        boolean authSuccessful;
+
         try {
             serverSocket = new ServerSocket(port);
             running = true;
@@ -23,14 +29,54 @@ public class TCPMangoServer implements MangoServer {
             System.out.println("TCP Server started on port " + port);
 
             while (true) {
-                try {
-                    Socket clientSocket = serverSocket.accept();
+                clientSocket = null;
+                in = null;
+                out = null;
+                authSuccessful = false;
 
-                    // Handle client communication in a separate thread
-                    handleClient(clientSocket);
+                try {
+                    clientSocket = serverSocket.accept();
+                    out = new ObjectOutputStream(clientSocket.getOutputStream());
+                    in = new ObjectInputStream(clientSocket.getInputStream());
+
+                    user = (User) in.readObject();
+
+                    System.out.printf("%s:%d with username '%s' authenticating%n", clientSocket.getInetAddress().getHostAddress(), clientSocket.getPort(), user.getUsername());
+
+                    authSuccessful = userAuthentication.test(user);
+
+                    out.writeBoolean(authSuccessful);
+                    out.flush();
+
+                    if (authSuccessful) {
+                        System.out.printf("'%s' connected successfully%n", user.getUsername());
+                        handleClient(clientSocket, out, in, user);
+                    } else {
+                        System.out.printf("%s failed to authenticate%n", user.getUsername());
+                    }
                 } catch (SocketException ignore) {
-                } catch (IOException e) {
+                } catch (IOException | ClassNotFoundException e) {
                     System.err.println("could not connect with client: " + e.getMessage());
+                } finally {
+                    if (!authSuccessful) {
+                        try {
+                            if (in != null) {
+                                in.close();
+                            }
+                        } catch (IOException ignore) {}
+
+                        try {
+                            if (out != null) {
+                                out.close();
+                            }
+                        } catch (IOException ignore) {}
+
+                        try {
+                            if (clientSocket != null) {
+                                clientSocket.close();
+                            }
+                        } catch (IOException ignore) {}
+                    }
                 }
             }
         } catch (IOException e) {
@@ -61,20 +107,17 @@ public class TCPMangoServer implements MangoServer {
         userAuthentication = predicate;
     }
 
-    private void handleClient(Socket clientSocket) {
-        String username = String.format("%s:%d", clientSocket.getInetAddress().getCanonicalHostName(), clientSocket.getPort());
+    private void handleClient(Socket client, ObjectOutputStream clientOut, ObjectInputStream clientIn, User user) {
+        String username = user.getUsername();
 
         new Thread(() -> {
-            try (
-                    ObjectInputStream reader = new ObjectInputStream(clientSocket.getInputStream());
-                    PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true)
-            ) {
+            try (client; clientOut; clientIn) {
                 do {
-                    Message message = (Message) reader.readObject();
+                    Message message = (Message) clientIn.readObject();
 
-                    System.out.printf("received message from %s > %s%n", message.getOwner().getUsername(), message.getBody());
+                    System.out.printf("received message from %s > %s%n", username, message.getBody());
 
-                    writer.printf("server received your message: %s%n", message.getBody());
+                    clientOut.writeUTF(String.format("server received your message: %s%n", message.getBody()));
                 } while (true);
             } catch (IOException ignore) {
             } catch (ClassNotFoundException e) {
