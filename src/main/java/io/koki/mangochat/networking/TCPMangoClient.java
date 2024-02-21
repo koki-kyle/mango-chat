@@ -3,30 +3,72 @@ package io.koki.mangochat.networking;
 import io.koki.mangochat.model.User;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
 public class TCPMangoClient implements MangoClient {
-    private Socket serverSocket = null;
+    private Socket serverSocket;
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
+    private InetAddress address;
+    private int port;
 
     @Override
-    public boolean setUpServer(InetAddress address, int port) {
-        boolean successful = false;
-
-        try {
-            serverSocket = new Socket(address, port);
-
-            System.out.printf("TCP Client connected to %s:%d%n", address.getCanonicalHostName(), port);
-        } catch (IOException e) {
-            System.err.println("could not connect to the server: " + e.getMessage());
-        }
-
-        return successful;
+    public void setUpServer(InetAddress address, int port) {
+        this.address = address;
+        this.port = port;
     }
 
     @Override
     public boolean authenticate(User user) {
-        return true;
+        boolean authSuccessful = false;
+
+        serverSocket = null;
+        in = null;
+        out = null;
+
+        try {
+            serverSocket = new Socket(address, port);
+            out = new ObjectOutputStream(serverSocket.getOutputStream());
+            in = new ObjectInputStream(serverSocket.getInputStream());
+
+            System.out.printf("TCP Client authenticating to %s:%d%n", address.getHostAddress(), port);
+
+            out.writeObject(user);
+            authSuccessful = in.readBoolean();
+
+            if (authSuccessful) {
+                System.out.println("connected successfully");
+            } else {
+                System.out.println("failed to authenticate");
+            }
+        } catch (IOException e) {
+            System.err.println("could not connect to server: " + e.getMessage());
+        } finally {
+            if (!authSuccessful) {
+                try {
+                    if (in != null) {
+                        in.close();
+                    }
+                } catch (IOException ignore) {}
+
+                try {
+                    if (out != null) {
+                        out.close();
+                    }
+                } catch (IOException ignore) {}
+
+                try {
+                    if (serverSocket != null) {
+                        serverSocket.close();
+                    }
+                } catch (IOException ignore) {}
+            }
+        }
+
+        return authSuccessful;
     }
 
     @Override
