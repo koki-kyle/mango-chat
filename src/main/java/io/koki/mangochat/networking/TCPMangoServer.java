@@ -7,7 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 
-public class TCPServer implements Server {
+public class TCPMangoServer implements MangoServer {
     private ServerSocket serverSocket = null;
     private volatile boolean running = false;
 

@@ -1,6 +1,6 @@
 package io.koki.mangochat.networking;
 
-public class UDPServer implements Server {
+public class UDPMangoServer implements MangoServer {
     @Override
     public void startServer(int port) {
         throw new RuntimeException("not implemented");

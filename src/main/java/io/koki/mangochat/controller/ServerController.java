@@ -1,28 +1,28 @@
 package io.koki.mangochat.controller;
 
 import io.koki.mangochat.model.DatabaseManager;
-import io.koki.mangochat.networking.Server;
+import io.koki.mangochat.networking.MangoServer;
 
 public class ServerController {
-    private final Server server;
+    private final MangoServer mangoServer;
     private final DatabaseManager databaseManager;
 
-    public ServerController(Server server, DatabaseManager databaseManager) {
-        this.server = server;
+    public ServerController(MangoServer mangoServer, DatabaseManager databaseManager) {
+        this.mangoServer = mangoServer;
         this.databaseManager = databaseManager;
     }
 
     public void startServer(int port) {
-        if (!server.isRunning()) {
-            new Thread(() -> server.startServer(port)).start();
+        if (!mangoServer.isRunning()) {
+            new Thread(() -> mangoServer.startServer(port)).start();
         } else {
             System.out.println("server is already running");
         }
     }
 
     public void stopServer() {
-        if (server.isRunning()) {
-            server.stopServer();
+        if (mangoServer.isRunning()) {
+            mangoServer.stopServer();
         } else {
             System.out.println("server is already stopped");
         }

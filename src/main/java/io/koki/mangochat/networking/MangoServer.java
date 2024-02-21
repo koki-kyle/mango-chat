@@ -1,6 +1,6 @@
 package io.koki.mangochat.networking;
 
-public interface Server {
+public interface MangoServer {
     void startServer(int port);
 
     void stopServer();
