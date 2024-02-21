@@ -31,7 +31,9 @@ public class LoginController {
             } else {
                 loginView.displayMessage(String.format("welcome %s!!", username), "login successful", JOptionPane.INFORMATION_MESSAGE);
                 changeView = true;
+
                 loginView.dispatchEvent(new WindowEvent(loginView, WindowEvent.WINDOW_CLOSING));
+
                 chatController = new ChatController(mangoClient, new ChatView());
                 chatController.show();
             }
