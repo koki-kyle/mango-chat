@@ -1,6 +1,7 @@
 package io.koki.mangochat.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +20,13 @@ public class DatabaseManager {
     public Optional<User> getUserByUsername(String username) {
         return users.stream()
                 .filter(u -> u.getUsername().equals(username))
+                .findFirst();
+    }
+
+    public Optional<User> getUserByUsernameAndPassword(String username, char[] password) {
+        return users.stream()
+                .filter(u -> u.getUsername().equals(username)
+                        && Arrays.equals(u.getPassword(), password))
                 .findFirst();
     }
 
