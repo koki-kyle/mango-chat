@@ -3,7 +3,9 @@ package io.koki.mangochat;
 import io.koki.mangochat.config.AppConfig;
 import io.koki.mangochat.config.CommunicationMode;
 import io.koki.mangochat.controller.LoginController;
-import io.koki.mangochat.networking.*;
+import io.koki.mangochat.networking.MangoClient;
+import io.koki.mangochat.networking.TCPMangoClient;
+import io.koki.mangochat.networking.UDPMangoClient;
 import io.koki.mangochat.view.LoginView;
 
 import java.net.InetAddress;
