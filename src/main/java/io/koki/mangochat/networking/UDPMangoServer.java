@@ -24,4 +24,9 @@ public class UDPMangoServer implements MangoServer {
     public void setUserAuthenticationPredicate(Predicate<User> predicate) {
         throw new RuntimeException("not implemented");
     }
+
+    @Override
+    public void setUserRegistrationPredicate(Predicate<User> predicate) {
+        throw new RuntimeException("not implemented");
+    }
 }

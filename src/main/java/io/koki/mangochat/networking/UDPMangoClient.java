@@ -16,6 +16,11 @@ public class UDPMangoClient implements MangoClient {
     }
 
     @Override
+    public boolean register(User user) {
+        return false;
+    }
+
+    @Override
     public void fetchMessages() {
         throw new RuntimeException("not implemented");
     }
