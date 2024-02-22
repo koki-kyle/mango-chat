@@ -13,6 +13,7 @@ public class TCPMangoServer implements MangoServer {
     private ServerSocket serverSocket = null;
     private volatile boolean running = false;
     private Predicate<User> userAuthentication = null;
+    private Predicate<User> userRegistration = null;
 
     @Override
     public void startServer(int port) {
@@ -26,7 +27,7 @@ public class TCPMangoServer implements MangoServer {
                 Socket clientSocket = null;
                 ObjectInputStream in = null;
                 ObjectOutputStream out = null;
-                boolean authSuccessful = false;
+                boolean successful = false;
 
                 try {
                     clientSocket = serverSocket.accept();
@@ -35,24 +36,35 @@ public class TCPMangoServer implements MangoServer {
 
                     User user = (User) in.readObject();
 
-                    System.out.printf("%s:%d with username '%s' authenticating%n", clientSocket.getInetAddress().getHostAddress(), clientSocket.getPort(), user.getUsername());
+                    boolean isUserLoginIn = in.readBoolean();
 
-                    authSuccessful = userAuthentication.test(user);
+                    System.out.printf("%s:%d with username '%s' %s%n",
+                            clientSocket.getInetAddress().getHostAddress(),
+                            clientSocket.getPort(),
+                            user.getUsername(),
+                            isUserLoginIn ? "authenticating"
+                                    : "registering");
 
-                    out.writeBoolean(authSuccessful);
+                    successful = isUserLoginIn ? userAuthentication.test(user)
+                            : userRegistration.test(user);
+
+                    out.writeBoolean(successful);
                     out.flush();
 
-                    if (authSuccessful) {
+                    if (successful) {
                         System.out.printf("'%s' connected successfully%n", user.getUsername());
                         handleClient(clientSocket, out, in, user);
                     } else {
-                        System.out.printf("%s failed to authenticate%n", user.getUsername());
+                        System.out.printf("%s failed to %s%n",
+                                user.getUsername(),
+                                isUserLoginIn ? "authenticate"
+                                        : "register");
                     }
                 } catch (SocketException ignore) {
                 } catch (IOException | ClassNotFoundException e) {
                     System.err.println("could not connect with client: " + e.getMessage());
                 } finally {
-                    if (!authSuccessful) {
+                    if (!successful) {
                         try {
                             if (in != null) {
                                 in.close();
@@ -99,6 +111,11 @@ public class TCPMangoServer implements MangoServer {
     @Override
     public void setUserAuthenticationPredicate(Predicate<User> predicate) {
         userAuthentication = predicate;
+    }
+
+    @Override
+    public void setUserRegistrationPredicate(Predicate<User> predicate) {
+        userRegistration = predicate;
     }
 
     private void handleClient(Socket client, ObjectOutputStream clientOut, ObjectInputStream clientIn, User user) {
