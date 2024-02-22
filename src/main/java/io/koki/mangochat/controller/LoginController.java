@@ -20,7 +20,6 @@ public class LoginController {
         this.loginView = loginView;
 
         loginView.setLoginButtonListener(e -> {
-            ChatController chatController;
             String username = loginView.getUsername();
             char[] password = loginView.getPassword();
 
@@ -29,13 +28,22 @@ public class LoginController {
             if (!mangoClient.authenticate(new User(username, password))) {
                 loginView.displayMessage("username or password incorrect", "error", JOptionPane.ERROR_MESSAGE);
             } else {
-                loginView.displayMessage(String.format("welcome %s!!", username), "login successful", JOptionPane.INFORMATION_MESSAGE);
-                changeView = true;
+                loginView.displayMessage(String.format("welcome again %s!!", username), "login successful", JOptionPane.INFORMATION_MESSAGE);
 
-                loginView.dispatchEvent(new WindowEvent(loginView, WindowEvent.WINDOW_CLOSING));
+                changeView(mangoClient);
+            }
+        });
 
-                chatController = new ChatController(mangoClient, new ChatView());
-                chatController.show();
+        loginView.setRegisterButtonListener(e -> {
+            String username = loginView.getUsername();
+            char[] password = loginView.getPassword();
+
+            if (!mangoClient.register(new User(username, password))) {
+                loginView.displayMessage("username already exists", "error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                loginView.displayMessage(String.format("welcome %s!!", username), "register successful", JOptionPane.INFORMATION_MESSAGE);
+
+                changeView(mangoClient);
             }
         });
 
@@ -50,6 +58,17 @@ public class LoginController {
                 }
             }
         });
+    }
+
+    public void changeView(MangoClient mangoClient) {
+        ChatController chatController;
+
+        changeView = true;
+
+        loginView.dispatchEvent(new WindowEvent(loginView, WindowEvent.WINDOW_CLOSING));
+
+        chatController = new ChatController(mangoClient, new ChatView());
+        chatController.show();
     }
 
     public void show() {
