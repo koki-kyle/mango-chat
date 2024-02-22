@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 
 public class LoginView extends JFrame {
     private final JButton loginButton;
+    private final JButton registerButton;
     private final JTextField usernameTextField;
     private final JPasswordField passwordTextField;
 
@@ -52,12 +53,18 @@ public class LoginView extends JFrame {
 
         loginButton = new JButton("login");
         loginButton.setFont(font);
-        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.anchor = GridBagConstraints.WEST;
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 2;
-        constraints.gridwidth = 2;
         add(loginButton, constraints);
+
+        registerButton = new JButton("register");
+        registerButton.setFont(font);
+        constraints.anchor = GridBagConstraints.EAST;
+        constraints.gridx = 1;
+        constraints.gridy = 2;
+        add(registerButton, constraints);
     }
 
     public String getUsername() {
@@ -70,6 +77,10 @@ public class LoginView extends JFrame {
 
     public void setLoginButtonListener(ActionListener listener) {
         loginButton.addActionListener(listener);
+    }
+
+    public void setRegisterButtonListener(ActionListener listener) {
+        registerButton.addActionListener(listener);
     }
 
     public void displayMessage(String message, String title, int messageType) {
