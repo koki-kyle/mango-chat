@@ -12,4 +12,6 @@ public interface MangoServer {
     boolean isRunning();
 
     void setUserAuthenticationPredicate(Predicate<User> predicate);
+
+    void setUserRegistrationPredicate(Predicate<User> predicate);
 }
