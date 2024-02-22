@@ -16,12 +16,6 @@ public class TCPMangoServer implements MangoServer {
 
     @Override
     public void startServer(int port) {
-        Socket clientSocket;
-        ObjectInputStream in;
-        ObjectOutputStream out;
-        User user;
-        boolean authSuccessful;
-
         try {
             serverSocket = new ServerSocket(port);
             running = true;
@@ -29,17 +23,17 @@ public class TCPMangoServer implements MangoServer {
             System.out.println("TCP Server started on port " + port);
 
             while (true) {
-                clientSocket = null;
-                in = null;
-                out = null;
-                authSuccessful = false;
+                Socket clientSocket = null;
+                ObjectInputStream in = null;
+                ObjectOutputStream out = null;
+                boolean authSuccessful = false;
 
                 try {
                     clientSocket = serverSocket.accept();
                     out = new ObjectOutputStream(clientSocket.getOutputStream());
                     in = new ObjectInputStream(clientSocket.getInputStream());
 
-                    user = (User) in.readObject();
+                    User user = (User) in.readObject();
 
                     System.out.printf("%s:%d with username '%s' authenticating%n", clientSocket.getInetAddress().getHostAddress(), clientSocket.getPort(), user.getUsername());
 
@@ -72,7 +66,7 @@ public class TCPMangoServer implements MangoServer {
                         } catch (IOException ignore) {}
 
                         try {
-                            if (clientSocket != null) {
+                            if (clientSocket != null && !clientSocket.isClosed()) {
                                 clientSocket.close();
                             }
                         } catch (IOException ignore) {}
