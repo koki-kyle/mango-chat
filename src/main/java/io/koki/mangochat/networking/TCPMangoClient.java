@@ -48,23 +48,7 @@ public class TCPMangoClient implements MangoClient {
             System.err.println("could not connect to server: " + e.getMessage());
         } finally {
             if (!authSuccessful) {
-                try {
-                    if (in != null) {
-                        in.close();
-                    }
-                } catch (IOException ignore) {}
-
-                try {
-                    if (out != null) {
-                        out.close();
-                    }
-                } catch (IOException ignore) {}
-
-                try {
-                    if (serverSocket != null) {
-                        serverSocket.close();
-                    }
-                } catch (IOException ignore) {}
+                disconnect();
             }
         }
 
@@ -78,6 +62,18 @@ public class TCPMangoClient implements MangoClient {
 
     @Override
     public void disconnect() {
+        try {
+            if (in != null) {
+                in.close();
+            }
+        } catch (IOException ignore) {}
+
+        try {
+            if (out != null) {
+                out.close();
+            }
+        } catch (IOException ignore) {}
+
         try {
             if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();
