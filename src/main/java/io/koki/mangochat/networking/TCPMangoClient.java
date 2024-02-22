@@ -23,36 +23,12 @@ public class TCPMangoClient implements MangoClient {
 
     @Override
     public boolean authenticate(User user) {
-        boolean authSuccessful = false;
+        return connectToServer(user, true);
+    }
 
-        serverSocket = null;
-        in = null;
-        out = null;
-
-        try {
-            serverSocket = new Socket(address, port);
-            out = new ObjectOutputStream(serverSocket.getOutputStream());
-            in = new ObjectInputStream(serverSocket.getInputStream());
-
-            System.out.printf("TCP Client authenticating to %s:%d%n", address.getHostAddress(), port);
-
-            out.writeObject(user);
-            authSuccessful = in.readBoolean();
-
-            if (authSuccessful) {
-                System.out.println("connected successfully");
-            } else {
-                System.out.println("failed to authenticate");
-            }
-        } catch (IOException e) {
-            System.err.println("could not connect to server: " + e.getMessage());
-        } finally {
-            if (!authSuccessful) {
-                disconnect();
-            }
-        }
-
-        return authSuccessful;
+    @Override
+    public boolean register(User user) {
+        return connectToServer(user, false);
     }
 
     @Override
@@ -82,5 +58,45 @@ public class TCPMangoClient implements MangoClient {
         } finally {
             System.out.println("TCP client disconnected");
         }
+    }
+
+    private boolean connectToServer(User user, boolean isUserLoginIn) {
+        boolean successful = false;
+
+        serverSocket = null;
+        in = null;
+        out = null;
+
+        try {
+            serverSocket = new Socket(address, port);
+            out = new ObjectOutputStream(serverSocket.getOutputStream());
+            in = new ObjectInputStream(serverSocket.getInputStream());
+
+            System.out.printf("TCP Client %s to %s:%d%n",
+                    isUserLoginIn ? "authenticating"
+                            : "registering",
+                    address.getHostAddress(),
+                    port);
+
+            out.writeObject(user);
+            out.writeBoolean(isUserLoginIn);
+            out.flush();
+
+            successful = in.readBoolean();
+
+            if (successful) {
+                System.out.println("connected successfully");
+            } else {
+                System.out.printf("failed to %s%n", isUserLoginIn ? "authenticate" : "register");
+            }
+        } catch (IOException e) {
+            System.err.println("could not connect to server: " + e.getMessage());
+        } finally {
+            if (!successful) {
+                disconnect();
+            }
+        }
+
+        return successful;
     }
 }
