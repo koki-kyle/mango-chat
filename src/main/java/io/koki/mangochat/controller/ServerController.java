@@ -14,6 +14,15 @@ public class ServerController {
         mangoServer.setUserAuthenticationPredicate(user -> databaseManager
                 .getUserByUsernameAndPassword(user.getUsername(), user.getPassword())
                 .isPresent());
+
+        mangoServer.setUserRegistrationPredicate(user -> {
+            boolean successful = databaseManager.getUserByUsername(user.getUsername()).isEmpty();
+
+            if (successful) {
+                databaseManager.addUser(user);
+            }
+            return successful;
+        });
     }
 
     public void startServer(int port) {
