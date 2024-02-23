@@ -1,17 +1,19 @@
 package io.koki.mangochat.networking;
 
-import io.koki.mangochat.model.User;
+import io.koki.mangochat.networking.tcp.ActiveUser;
+import io.koki.mangochat.model.Message;
 
-import java.util.function.Predicate;
+import java.net.ServerSocket;
+import java.util.ArrayList;
+import java.util.List;
 
-public interface MangoServer {
-    void startServer(int port);
+public abstract class MangoServer {
+    protected ServerSocket serverSocket = null;
+    protected List<ActiveUser> activeUsers = new ArrayList<>();
+    protected List<Message> chatHistory = new ArrayList<>();
+    protected volatile boolean running = false;
 
-    void stopServer();
+    public abstract void startServer(int port);
 
-    boolean isRunning();
-
-    void setUserAuthenticationPredicate(Predicate<User> predicate);
-
-    void setUserRegistrationPredicate(Predicate<User> predicate);
+    public abstract void stopServer();
 }

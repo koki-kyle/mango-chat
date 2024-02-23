@@ -1,26 +1,78 @@
 package io.koki.mangochat.view;
 
+import io.koki.mangochat.networking.MangoClient;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class LoginView extends JFrame {
-    private final JButton loginButton;
-    private final JButton registerButton;
-    private final JTextField usernameTextField;
-    private final JPasswordField passwordTextField;
+    private JButton loginButton;
+    private JTextField usernameTextField;
+    private boolean changingView = false;
+    private final MangoClient mangoClient;
 
-    public LoginView() {
-        GridBagConstraints constraints;
-        Font font = new Font("consolas", Font.BOLD | Font.ITALIC, 16);
-        JLabel label;
+    public LoginView(MangoClient mangoClient) {
+        this.mangoClient = mangoClient;
+
+        initComponents();
+        setupUI();
+    }
+
+    private void initComponents() {
+        usernameTextField = new JTextField();
+        usernameTextField.setPreferredSize(new Dimension(100, 0));
+
+        loginButton = new JButton("login");
+        loginButton.addActionListener(e -> {
+            String username = usernameTextField.getText();
+
+            if (mangoClient.login(username)) {
+                displayMessage(String.format("welcome %s", username), "login successful", JOptionPane.INFORMATION_MESSAGE);
+                changeView(username);
+            } else {
+                displayMessage(String.format("%s is already taken", username), "error", JOptionPane.ERROR_MESSAGE);
+                usernameTextField.setText("");
+            }
+        });
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(300, 300);
+        setSize(300, 150);
         setTitle("login");
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(new GridBagLayout());
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (changingView) {
+                    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                } else {
+                    mangoClient.disconnect();
+                }
+            }
+        });
+
+    }
+
+    private void changeView(String username) {
+        changingView = true;
+
+        dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+
+        SwingUtilities.invokeLater(() -> new ChatView(mangoClient, username).setVisible(true));
+    }
+
+    private void displayMessage(String message, String title, int messageType) {
+        JOptionPane.showMessageDialog(this, message, title, messageType);
+    }
+
+    private void setupUI() {
+        GridBagConstraints constraints;
+        Font font = new Font("consolas", Font.BOLD | Font.ITALIC, 16);
+        JLabel label;
 
         constraints = new GridBagConstraints();
         constraints.anchor = GridBagConstraints.FIRST_LINE_START;
@@ -33,62 +85,17 @@ public class LoginView extends JFrame {
         constraints.gridy = 0;
         add(label, constraints);
 
-        label = new JLabel("password:");
-        label.setFont(font);
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        add(label, constraints);
-
-        usernameTextField = new JTextField();
-        usernameTextField.setPreferredSize(new Dimension(100, 0));
+        usernameTextField.setFont(font);
         constraints.gridx = 1;
         constraints.gridy = 0;
         add(usernameTextField, constraints);
 
-        passwordTextField = new JPasswordField();
-        passwordTextField.setPreferredSize(new Dimension(100, 0));
-        constraints.gridx = 1;
-        constraints.gridy = 1;
-        add(passwordTextField, constraints);
-
-        loginButton = new JButton("login");
         loginButton.setFont(font);
-        constraints.anchor = GridBagConstraints.WEST;
+        constraints.anchor = GridBagConstraints.CENTER;
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 2;
+        constraints.gridy = 1;
+        constraints.gridwidth = 2;
         add(loginButton, constraints);
-
-        registerButton = new JButton("register");
-        registerButton.setFont(font);
-        constraints.anchor = GridBagConstraints.EAST;
-        constraints.gridx = 1;
-        constraints.gridy = 2;
-        add(registerButton, constraints);
-    }
-
-    public String getUsername() {
-        return usernameTextField.getText();
-    }
-
-    public char[] getPassword() {
-        return passwordTextField.getPassword();
-    }
-
-    public void setLoginButtonListener(ActionListener listener) {
-        loginButton.addActionListener(listener);
-    }
-
-    public void setRegisterButtonListener(ActionListener listener) {
-        registerButton.addActionListener(listener);
-    }
-
-    public void displayMessage(String message, String title, int messageType) {
-        JOptionPane.showMessageDialog(this, message, title, messageType);
-    }
-
-    public void clearFields() {
-        usernameTextField.setText("");
-        passwordTextField.setText("");
     }
 }
